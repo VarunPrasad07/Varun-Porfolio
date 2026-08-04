@@ -4,23 +4,98 @@ import { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useTheme } from '@/lib/ThemeContext';
 
+// Typewriter skills sequence for 'Also building:'
+const HERO_SKILLS = [
+  'Physical Design (OpenLane & KLayout)',
+  'Embedded Systems & IoT',
+  'PCB Design',
+  'Robotics',
+];
+
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const isHeroVisible = useRef(true);
   const { theme } = useTheme();
   const isLight = theme === 'light';
 
+  // Typewriter animation state
+  const [skillIndex, setSkillIndex] = useState(0);
+  const [displayText, setDisplayText] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [showCursor, setShowCursor] = useState(true);
+
+  // Blinking cursor toggle
+  useEffect(() => {
+    const cursorInterval = setInterval(() => {
+      setShowCursor((prev) => !prev);
+    }, 500);
+    return () => clearInterval(cursorInterval);
+  }, []);
+
+  // Typewriter effect loop
+  useEffect(() => {
+    const currentFullSkill = HERO_SKILLS[skillIndex];
+    let timer: NodeJS.Timeout;
+
+    if (!isDeleting) {
+      // Type character by character
+      if (displayText.length < currentFullSkill.length) {
+        timer = setTimeout(() => {
+          setDisplayText(currentFullSkill.slice(0, displayText.length + 1));
+        }, 65);
+      } else {
+        // Pause for 1.8 seconds after full skill displayed
+        timer = setTimeout(() => {
+          setIsDeleting(true);
+        }, 1800);
+      }
+    } else {
+      // Delete character by character
+      if (displayText.length > 0) {
+        timer = setTimeout(() => {
+          setDisplayText(currentFullSkill.slice(0, displayText.length - 1));
+        }, 35);
+      } else {
+        // Wait 0.4 seconds before typing next skill
+        timer = setTimeout(() => {
+          setIsDeleting(false);
+          setSkillIndex((prev) => (prev + 1) % HERO_SKILLS.length);
+        }, 400);
+      }
+    }
+
+    return () => clearTimeout(timer);
+  }, [displayText, isDeleting, skillIndex]);
+
+  // Track mouse — only update when hero section is visible
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      if (!sectionRef.current) return;
-      const rect = sectionRef.current.getBoundingClientRect();
+      if (!isHeroVisible.current) return;
       setMousePos({
-        x: ((e.clientX - rect.left) / rect.width - 0.5) * 2,
-        y: ((e.clientY - rect.top) / rect.height - 0.5) * 2,
+        x: (e.clientX / window.innerWidth - 0.5) * 2,
+        y: (e.clientY / window.innerHeight - 0.5) * 2,
       });
     };
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
     return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  // Reset chip to center when hero scrolls out of view
+  useEffect(() => {
+    if (!sectionRef.current) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        isHeroVisible.current = entry.isIntersecting;
+        if (!entry.isIntersecting) {
+          // Smoothly snap chip back to neutral center position
+          setMousePos({ x: 0, y: 0 });
+        }
+      },
+      { threshold: 0.2 } // trigger when less than 20% of hero is visible
+    );
+    observer.observe(sectionRef.current);
+    return () => observer.disconnect();
   }, []);
 
 
@@ -155,23 +230,68 @@ export default function Hero() {
             VARUN PRASAD
           </motion.h1>
 
-          {/* Title */}
+          {/* Main Subtitle */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4, duration: 0.6 }}
-            style={{ marginBottom: '20px' }}
+            style={{ marginBottom: '14px' }}
           >
             <h2
               style={{
-                fontSize: 'clamp(1.2rem, 2.5vw, 1.85rem)',
-                fontWeight: 500,
-                letterSpacing: '0.01em',
-                color: isLight ? '#222222' : 'var(--c-text-1)',
+                fontSize: 'clamp(1.05rem, 2.1vw, 1.6rem)',
+                fontWeight: 600,
+                letterSpacing: '-0.01em',
+                color: isLight ? '#111111' : 'var(--c-text-1)',
+                lineHeight: 1.35,
               }}
             >
-              RTL Design & Verification Engineer
+              RTL Design &amp; Verification Engineer{' '}
+              <span
+                style={{
+                  color: isLight ? '#8B000A' : '#E10600',
+                  fontWeight: 700,
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                @ Kiwistron
+              </span>
             </h2>
+          </motion.div>
+
+          {/* Clean Typewriter Line with 'Also building:' prefix */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.45, duration: 0.6 }}
+            style={{
+              marginBottom: '28px',
+              fontFamily: 'var(--font-mono)',
+              fontSize: 'clamp(0.88rem, 1.6vw, 1.05rem)',
+              color: isLight ? '#444444' : 'var(--c-text-2)',
+              display: 'flex',
+              alignItems: 'center',
+              minHeight: '1.8em',
+            }}
+          >
+            <span style={{ color: 'var(--c-red)', fontWeight: 600, marginRight: '8px' }}>
+              Also building:
+            </span>
+            <span style={{ color: isLight ? '#111111' : '#FFFFFF', fontWeight: 600 }}>
+              {displayText}
+            </span>
+            <span
+              style={{
+                color: 'var(--c-red)',
+                fontWeight: 600,
+                opacity: showCursor ? 1 : 0,
+                transition: 'opacity 0.08s ease',
+                marginLeft: '2px',
+                userSelect: 'none',
+              }}
+            >
+              |
+            </span>
           </motion.div>
 
           {/* Specializations */}
@@ -368,8 +488,8 @@ export default function Hero() {
               justifyContent: 'center',
               padding: '32px',
               overflow: 'hidden',
-              transform: `perspective(1000px) rotateY(${mousePos.x * 8}deg) rotateX(${-mousePos.y * 8}deg)`,
-              transition: 'transform 0.2s ease-out',
+              transform: `perspective(1000px) translateX(${mousePos.x * 20}px) translateY(${mousePos.y * 20}px) rotateY(${mousePos.x * 8}deg) rotateX(${-mousePos.y * 8}deg)`,
+              transition: 'transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
             }}
           >
             {/* PCB Trace Overlay Grid */}
@@ -461,35 +581,45 @@ export default function Hero() {
 
                 // Route definitions: side, pinIndex, direction (rx=inward pin→die, tx=outward die→pin), delay
                 const routes: { path: string; via: { x: number; y: number } | null; dir: 'tx' | 'rx'; delay: number }[] = [
-                  // === TOP PINS ===
-                  { path: `M ${P[0]},${TIP} L ${P[0]},${TIP + 34} L ${DIE.l},${DIE.t}`,  via: { x: P[0], y: TIP + 34 }, dir: 'rx', delay: 0 },
-                  { path: `M ${P[2]},${TIP} L ${P[2]},${DIE.t}`,                           via: null,                      dir: 'tx', delay: 0.15 },
-                  { path: `M ${P[4]},${TIP} L ${P[4]},${DIE.t}`,                           via: null,                      dir: 'rx', delay: 0.3 },
-                  { path: `M ${P[5]},${TIP} L ${P[5]},${DIE.t}`,                           via: null,                      dir: 'tx', delay: 0.1 },
-                  { path: `M ${P[7]},${TIP} L ${P[7]},${DIE.t}`,                           via: null,                      dir: 'rx', delay: 0.4 },
-                  { path: `M ${P[9]},${TIP} L ${P[9]},${DIE.t}`,                           via: null,                      dir: 'tx', delay: 0.2 },
-                  { path: `M ${P[11]},${TIP} L ${P[11]},${TIP + 34} L ${DIE.r},${DIE.t}`, via: { x: P[11], y: TIP + 34 }, dir: 'rx', delay: 0.35 },
+                  // === TOP PINS (Straight clean traces, no corner bend wires) ===
+                  { path: `M ${P[2]},${TIP} L ${P[2]},${DIE.t}`, via: null, dir: 'tx', delay: 0.15 },
+                  { path: `M ${P[3]},${TIP} L ${P[3]},${DIE.t}`, via: null, dir: 'rx', delay: 0.35 },
+                  { path: `M ${P[4]},${TIP} L ${P[4]},${DIE.t}`, via: null, dir: 'rx', delay: 0.3 },
+                  { path: `M ${P[5]},${TIP} L ${P[5]},${DIE.t}`, via: null, dir: 'tx', delay: 0.1 },
+                  { path: `M ${P[6]},${TIP} L ${P[6]},${DIE.t}`, via: null, dir: 'tx', delay: 0.25 },
+                  { path: `M ${P[7]},${TIP} L ${P[7]},${DIE.t}`, via: null, dir: 'rx', delay: 0.4 },
+                  { path: `M ${P[8]},${TIP} L ${P[8]},${DIE.t}`, via: null, dir: 'rx', delay: 0.1 },
+                  { path: `M ${P[9]},${TIP} L ${P[9]},${DIE.t}`, via: null, dir: 'tx', delay: 0.2 },
 
                   // === BOTTOM PINS ===
-                  { path: `M ${P[0]},${400 - TIP} L ${P[0]},${400 - TIP - 34} L ${DIE.l},${DIE.b}`,  via: { x: P[0], y: 400 - TIP - 34 }, dir: 'tx', delay: 0.1 },
-                  { path: `M ${P[3]},${400 - TIP} L ${P[3]},${DIE.b}`,                                 via: null,                            dir: 'rx', delay: 0.25 },
-                  { path: `M ${P[6]},${400 - TIP} L ${P[6]},${DIE.b}`,                                 via: null,                            dir: 'tx', delay: 0.05 },
-                  { path: `M ${P[8]},${400 - TIP} L ${P[8]},${DIE.b}`,                                 via: null,                            dir: 'rx', delay: 0.45 },
-                  { path: `M ${P[11]},${400 - TIP} L ${P[11]},${400 - TIP - 34} L ${DIE.r},${DIE.b}`, via: { x: P[11], y: 400 - TIP - 34 }, dir: 'tx', delay: 0.3 },
+                  { path: `M ${P[2]},${400 - TIP} L ${P[2]},${DIE.b}`, via: null, dir: 'rx', delay: 0.2 },
+                  { path: `M ${P[3]},${400 - TIP} L ${P[3]},${DIE.b}`, via: null, dir: 'rx', delay: 0.25 },
+                  { path: `M ${P[4]},${400 - TIP} L ${P[4]},${DIE.b}`, via: null, dir: 'tx', delay: 0.4 },
+                  { path: `M ${P[5]},${400 - TIP} L ${P[5]},${DIE.b}`, via: null, dir: 'rx', delay: 0.15 },
+                  { path: `M ${P[6]},${400 - TIP} L ${P[6]},${DIE.b}`, via: null, dir: 'tx', delay: 0.05 },
+                  { path: `M ${P[7]},${400 - TIP} L ${P[7]},${DIE.b}`, via: null, dir: 'tx', delay: 0.3 },
+                  { path: `M ${P[8]},${400 - TIP} L ${P[8]},${DIE.b}`, via: null, dir: 'rx', delay: 0.45 },
+                  { path: `M ${P[9]},${400 - TIP} L ${P[9]},${DIE.b}`, via: null, dir: 'tx', delay: 0.35 },
 
                   // === LEFT PINS ===
-                  { path: `M ${TIP},${P[0]} L ${TIP + 34},${P[0]} L ${DIE.l},${DIE.t}`,  via: { x: TIP + 34, y: P[0] }, dir: 'rx', delay: 0.2 },
-                  { path: `M ${TIP},${P[2]} L ${DIE.l},${P[2]}`,                           via: null,                     dir: 'tx', delay: 0.35 },
-                  { path: `M ${TIP},${P[5]} L ${DIE.l},${P[5]}`,                           via: null,                     dir: 'rx', delay: 0.5 },
-                  { path: `M ${TIP},${P[8]} L ${DIE.l},${P[8]}`,                           via: null,                     dir: 'tx', delay: 0.15 },
-                  { path: `M ${TIP},${P[11]} L ${TIP + 34},${P[11]} L ${DIE.l},${DIE.b}`, via: { x: TIP + 34, y: P[11] }, dir: 'rx', delay: 0.4 },
+                  { path: `M ${TIP},${P[2]} L ${DIE.l},${P[2]}`, via: null, dir: 'tx', delay: 0.35 },
+                  { path: `M ${TIP},${P[3]} L ${DIE.l},${P[3]}`, via: null, dir: 'rx', delay: 0.1 },
+                  { path: `M ${TIP},${P[4]} L ${DIE.l},${P[4]}`, via: null, dir: 'tx', delay: 0.25 },
+                  { path: `M ${TIP},${P[5]} L ${DIE.l},${P[5]}`, via: null, dir: 'rx', delay: 0.5 },
+                  { path: `M ${TIP},${P[6]} L ${DIE.l},${P[6]}`, via: null, dir: 'tx', delay: 0.3 },
+                  { path: `M ${TIP},${P[7]} L ${DIE.l},${P[7]}`, via: null, dir: 'rx', delay: 0.4 },
+                  { path: `M ${TIP},${P[8]} L ${DIE.l},${P[8]}`, via: null, dir: 'tx', delay: 0.15 },
+                  { path: `M ${TIP},${P[9]} L ${DIE.l},${P[9]}`, via: null, dir: 'rx', delay: 0.2 },
 
                   // === RIGHT PINS ===
-                  { path: `M ${400 - TIP},${P[0]} L ${400 - TIP - 34},${P[0]} L ${DIE.r},${DIE.t}`,  via: { x: 400 - TIP - 34, y: P[0] }, dir: 'tx', delay: 0.05 },
-                  { path: `M ${400 - TIP},${P[3]} L ${DIE.r},${P[3]}`,                                 via: null,                            dir: 'rx', delay: 0.55 },
-                  { path: `M ${400 - TIP},${P[5]} L ${DIE.r},${P[5]}`,                                 via: null,                            dir: 'tx', delay: 0.2 },
-                  { path: `M ${400 - TIP},${P[9]} L ${DIE.r},${P[9]}`,                                 via: null,                            dir: 'rx', delay: 0.45 },
-                  { path: `M ${400 - TIP},${P[11]} L ${400 - TIP - 34},${P[11]} L ${DIE.r},${DIE.b}`, via: { x: 400 - TIP - 34, y: P[11] }, dir: 'tx', delay: 0.3 },
+                  { path: `M ${400 - TIP},${P[2]} L ${DIE.r},${P[2]}`, via: null, dir: 'rx', delay: 0.1 },
+                  { path: `M ${400 - TIP},${P[3]} L ${DIE.r},${P[3]}`, via: null, dir: 'rx', delay: 0.55 },
+                  { path: `M ${400 - TIP},${P[4]} L ${DIE.r},${P[4]}`, via: null, dir: 'tx', delay: 0.35 },
+                  { path: `M ${400 - TIP},${P[5]} L ${DIE.r},${P[5]}`, via: null, dir: 'tx', delay: 0.2 },
+                  { path: `M ${400 - TIP},${P[6]} L ${DIE.r},${P[6]}`, via: null, dir: 'rx', delay: 0.15 },
+                  { path: `M ${400 - TIP},${P[7]} L ${DIE.r},${P[7]}`, via: null, dir: 'tx', delay: 0.4 },
+                  { path: `M ${400 - TIP},${P[8]} L ${DIE.r},${P[8]}`, via: null, dir: 'rx', delay: 0.25 },
+                  { path: `M ${400 - TIP},${P[9]} L ${DIE.r},${P[9]}`, via: null, dir: 'rx', delay: 0.45 },
                 ];
 
                 return routes.map((route, i) => (

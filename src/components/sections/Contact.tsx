@@ -11,17 +11,48 @@ export default function Contact() {
   const { theme } = useTheme();
   const isLight = theme === 'light';
   const [form, setForm] = useState({ name: '', email: '', message: '' });
-  const [status, setStatus] = useState<'idle' | 'sending' | 'sent'>('idle');
+  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'failed'>('idle');
+  const [submittedPayload, setSubmittedPayload] = useState<{ name: string; email: string; message: string; time: string; note?: string } | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (status !== 'idle') return;
     setStatus('sending');
-    setTimeout(() => {
-      setStatus('sent');
-      setForm({ name: '', email: '', message: '' });
+
+    const payloadData = {
+      name: form.name,
+      email: form.email,
+      message: form.message,
+      time: new Date().toLocaleTimeString(),
+    };
+
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.name,
+          email: form.email,
+          message: form.message,
+        }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        setStatus('sent');
+        setSubmittedPayload({ ...payloadData, note: data.message });
+        setForm({ name: '', email: '', message: '' });
+        setTimeout(() => setStatus('idle'), 6000);
+      } else {
+        console.error('[Contact] Submission failed:', data.message);
+        setStatus('failed');
+        setTimeout(() => setStatus('idle'), 4000);
+      }
+    } catch (err) {
+      console.error('Transmission API dispatch error:', err);
+      setStatus('failed');
       setTimeout(() => setStatus('idle'), 4000);
-    }, 2000);
+    }
   };
 
   const fields = [
@@ -273,7 +304,7 @@ export default function Contact() {
               {/* Submit button */}
               <button
                 type="submit"
-                disabled={status !== 'idle'}
+                disabled={status === 'sending'}
                 data-cursor={status === 'idle' ? 'TRANSMIT' : ''}
                 style={{
                   padding: '15px 32px',
@@ -319,9 +350,51 @@ export default function Contact() {
                       ✓ LINK ESTABLISHED
                     </motion.span>
                   )}
+                  {status === 'failed' && (
+                    <motion.span key="failed" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} style={{ color: '#FF4444' }}>
+                      ✗ TRANSMISSION FAILED — RETRY
+                    </motion.span>
+                  )}
                 </AnimatePresence>
               </button>
             </form>
+
+            {/* Transmission Log Receipt Card */}
+            <AnimatePresence>
+              {submittedPayload && (
+                <motion.div
+                  initial={{ opacity: 0, y: 12, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -12, scale: 0.96 }}
+                  transition={{ duration: 0.4 }}
+                  style={{
+                    marginTop: '20px',
+                    padding: '18px 20px',
+                    borderRadius: '10px',
+                    background: 'rgba(0, 230, 118, 0.05)',
+                    border: '1px solid rgba(0, 230, 118, 0.3)',
+                    boxShadow: '0 0 15px rgba(0, 230, 118, 0.1)',
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '11px',
+                    lineHeight: '1.7',
+                    color: isLight ? '#007E33' : '#00E676',
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 700, letterSpacing: '0.12em', marginBottom: '8px' }}>
+                    <span>✓</span> TRANSMISSION LOG RECORDED & DISPATCHED
+                  </div>
+                  <div><strong style={{ opacity: 0.7 }}>TARGET:</strong> {CONTACT_INFO.email}</div>
+                  <div><strong style={{ opacity: 0.7 }}>SENDER:</strong> {submittedPayload.name} &lt;{submittedPayload.email}&gt;</div>
+                  <div><strong style={{ opacity: 0.7 }}>PAYLOAD:</strong> &quot;{submittedPayload.message}&quot;</div>
+                  <div style={{ marginTop: '6px', opacity: 0.6, fontSize: '10px' }}>TIMESTAMP: {submittedPayload.time}</div>
+                  {submittedPayload.note && (
+                    <div style={{ marginTop: '8px', paddingTop: '8px', borderTop: '1px dashed rgba(0,230,118,0.2)', color: '#FFD700', fontSize: '11px' }}>
+                      ⚡ STATUS: {submittedPayload.note}
+                    </div>
+                  )}
+                </motion.div>
+              )}
+            </AnimatePresence>
           </motion.div>
         </div>
       </div>

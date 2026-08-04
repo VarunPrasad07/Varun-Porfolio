@@ -19,11 +19,17 @@ export default function Navbar() {
     setScrollProgress(docHeight > 0 ? (scrollTop / docHeight) * 100 : 0);
     setIsScrolled(scrollTop > 50);
 
-    const sections = NAV_ITEMS.map((item) => document.getElementById(item.id)).filter(Boolean);
-    for (let i = sections.length - 1; i >= 0; i--) {
-      const section = sections[i];
-      if (section && section.offsetTop - 200 <= scrollTop) {
-        setActiveSection(NAV_ITEMS[i].id);
+    const sectionElements = [
+      ...NAV_ITEMS.map((item) => ({ id: item.id, el: document.getElementById(item.id) })),
+      { id: 'contact', el: document.getElementById('resume') },
+    ]
+      .filter((x): x is { id: string; el: HTMLElement } => Boolean(x.el))
+      .sort((a, b) => a.el.offsetTop - b.el.offsetTop);
+
+    for (let i = sectionElements.length - 1; i >= 0; i--) {
+      const { id, el } = sectionElements[i];
+      if (el && el.offsetTop - 250 <= scrollTop) {
+        setActiveSection(id);
         break;
       }
     }

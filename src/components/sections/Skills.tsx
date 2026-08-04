@@ -4,21 +4,22 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { SKILL_CATEGORIES } from '@/lib/constants';
 import { useTheme } from '@/lib/ThemeContext';
+import { useInView } from 'react-intersection-observer';
 
 export default function Skills() {
+  const [ref, inView] = useInView({ threshold: 0.15, triggerOnce: true });
   const [active, setActive] = useState(0);
   const { theme } = useTheme();
   const isLight = theme === 'light';
 
   const fadeUp = (delay = 0) => ({
     initial: { opacity: 0, y: 24 },
-    whileInView: { opacity: 1, y: 0 },
-    viewport: { once: true, amount: 0.1 },
+    animate: inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 24 },
     transition: { duration: 0.6, delay, ease: [0.16, 1, 0.3, 1] as [number,number,number,number] },
   });
 
   return (
-    <section id="skills" style={{ padding: '8rem 1.5rem' }}>
+    <section id="skills" ref={ref} style={{ padding: '8rem 1.5rem' }}>
       <div style={{ maxWidth: '1080px', margin: '0 auto' }}>
 
         {/* Section label */}
@@ -87,7 +88,7 @@ export default function Skills() {
               <motion.div
                 key={skill.name}
                 initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                animate={inView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
                 transition={{ delay: i * 0.07, duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
                 style={{
                   padding: '24px 26px',
@@ -124,8 +125,8 @@ export default function Skills() {
                   <motion.div
                     key={`${active}-${skill.name}`}
                     initial={{ width: '0%' }}
-                    animate={{ width: `${skill.level}%` }}
-                    transition={{ duration: 1, delay: 0.15 + i * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                    animate={inView ? { width: `${skill.level}%` } : { width: '0%' }}
+                    transition={{ duration: 1.2, delay: 0.15 + i * 0.08, ease: [0.16, 1, 0.3, 1] }}
                     style={{
                       height: '100%',
                       borderRadius: '99px',
