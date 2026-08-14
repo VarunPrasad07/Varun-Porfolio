@@ -455,7 +455,7 @@ export default function Hero() {
           </motion.div>
         </div>
 
-        {/* RIGHT COLUMN: Interactive High-Tech Microchip Graphic with Authentic Orthogonal PCB Traces */}
+        {/* RIGHT COLUMN: Profile Photo */}
         <motion.div
           initial={{ opacity: 0, scale: 0.9, x: 30 }}
           animate={{ opacity: 1, scale: 1, x: 0 }}
@@ -467,371 +467,126 @@ export default function Hero() {
             position: 'relative',
           }}
         >
-          {/* Main Silicon Chip Package */}
+          {/* Outer glow ring */}
+          <div
+            style={{
+              position: 'absolute',
+              width: 'min(100%, 450px)',
+              aspectRatio: '1 / 1',
+              borderRadius: '50%',
+              background: 'radial-gradient(circle, rgba(225, 6, 0, 0.18) 0%, transparent 70%)',
+              filter: 'blur(24px)',
+              pointerEvents: 'none',
+            }}
+          />
+
+          {/* Photo Card */}
           <div
             style={{
               position: 'relative',
-              width: 'min(100%, 420px)',
+              width: 'min(100%, 380px)',
               aspectRatio: '1 / 1',
-              borderRadius: '24px',
-              background: isLight
-                ? 'linear-gradient(145deg, #FFFFFF 0%, #E8E8EE 100%)'
-                : 'linear-gradient(145deg, #121214 0%, #08080A 100%)',
+              borderRadius: '50%',
               border: isLight
-                ? '1px solid rgba(225, 6, 0, 0.25)'
-                : '1px solid rgba(225, 6, 0, 0.3)',
+                ? '3px solid rgba(225, 6, 0, 0.4)'
+                : '3px solid rgba(225, 6, 0, 0.6)',
               boxShadow: isLight
-                ? '0 16px 40px rgba(0,0,0,0.12), 0 0 25px rgba(225, 6, 0, 0.1)'
-                : '0 20px 50px rgba(0,0,0,0.8), 0 0 30px rgba(225, 6, 0, 0.15), inset 0 0 20px rgba(225, 6, 0, 0.05)',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              padding: '32px',
+                ? '0 16px 48px rgba(0,0,0,0.15), 0 0 40px rgba(225, 6, 0, 0.15)'
+                : '0 20px 60px rgba(0,0,0,0.85), 0 0 50px rgba(225, 6, 0, 0.25)',
               overflow: 'hidden',
-              transform: `perspective(1000px) translateX(${mousePos.x * 20}px) translateY(${mousePos.y * 20}px) rotateY(${mousePos.x * 8}deg) rotateX(${-mousePos.y * 8}deg)`,
+              transform: `perspective(1000px) translateX(${mousePos.x * 14}px) translateY(${mousePos.y * 14}px) rotateY(${mousePos.x * 5}deg) rotateX(${-mousePos.y * 5}deg)`,
               transition: 'transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
             }}
           >
-            {/* PCB Trace Overlay Grid */}
-            <div
+            {/* Profile Image */}
+            <img
+              src="/pannu.png"
+              alt="Varun Prasad — RTL Design Engineer"
               style={{
-                position: 'absolute',
-                inset: 0,
-                backgroundImage: isLight
-                  ? `
-                    linear-gradient(rgba(225, 6, 0, 0.08) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(225, 6, 0, 0.08) 1px, transparent 1px)
-                  `
-                  : `
-                    linear-gradient(rgba(225, 6, 0, 0.06) 1px, transparent 1px),
-                    linear-gradient(90deg, rgba(225, 6, 0, 0.06) 1px, transparent 1px)
-                  `,
-                backgroundSize: '24px 24px',
-                opacity: isLight ? 0.4 : 0.5,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                objectPosition: 'center top',
+                display: 'block',
               }}
             />
 
-            {/* UNIFIED SVG: Pins + Traces + Signals — all in same coordinate space */}
-            <svg
-              viewBox="0 0 400 400"
+            {/* Subtle scan line overlay */}
+            <motion.div
+              animate={{ y: ['-100%', '200%'] }}
+              transition={{ duration: 3.5, repeat: Infinity, ease: 'linear' }}
               style={{
                 position: 'absolute',
-                inset: 0,
-                width: '100%',
-                height: '100%',
+                left: 0,
+                right: 0,
+                height: '3px',
+                background: 'linear-gradient(90deg, transparent, rgba(225, 6, 0, 0.5), transparent)',
+                boxShadow: '0 0 12px rgba(225, 6, 0, 0.6)',
+                opacity: 0.6,
                 pointerEvents: 'none',
-                zIndex: 1,
               }}
-            >
-              {/* Gradient definitions for pin coloring */}
-              <defs>
-                <linearGradient id="pin-grad-down" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor={isLight ? '#E10600' : '#E10600'} stopOpacity={isLight ? '1' : '0.6'} />
-                  <stop offset="100%" stopColor={isLight ? '#999' : '#444'} stopOpacity="1" />
-                </linearGradient>
-                <linearGradient id="pin-grad-up" x1="0" y1="1" x2="0" y2="0">
-                  <stop offset="0%" stopColor={isLight ? '#E10600' : '#E10600'} stopOpacity={isLight ? '1' : '0.6'} />
-                  <stop offset="100%" stopColor={isLight ? '#999' : '#444'} stopOpacity="1" />
-                </linearGradient>
-                <linearGradient id="pin-grad-right" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor={isLight ? '#E10600' : '#E10600'} stopOpacity={isLight ? '1' : '0.6'} />
-                  <stop offset="100%" stopColor={isLight ? '#999' : '#444'} stopOpacity="1" />
-                </linearGradient>
-                <linearGradient id="pin-grad-left" x1="1" y1="0" x2="0" y2="0">
-                  <stop offset="0%" stopColor={isLight ? '#E10600' : '#E10600'} stopOpacity={isLight ? '1' : '0.6'} />
-                  <stop offset="100%" stopColor={isLight ? '#999' : '#444'} stopOpacity="1" />
-                </linearGradient>
-              </defs>
+            />
+          </div>
 
-              {/* ====== QFP PACKAGE PINS (rendered in SVG for exact alignment) ====== */}
-              {(() => {
-                // Pin center positions: (12 + i*7.2)% of 400
-                const pinPositions = Array.from({ length: 12 }, (_, i) => Math.round((12 + i * 7.2) * 4));
-                const pinW = 4;    // pin width (narrow dimension)
-                const pinL = 14;   // pin length (long dimension)
-                const pins: React.ReactElement[] = [];
-
-                // Top pins
-                pinPositions.forEach((cx, i) => {
-                  pins.push(<rect key={`pt-${i}`} x={cx - pinW / 2} y={0} width={pinW} height={pinL} fill="url(#pin-grad-down)" />);
-                });
-                // Bottom pins
-                pinPositions.forEach((cx, i) => {
-                  pins.push(<rect key={`pb-${i}`} x={cx - pinW / 2} y={400 - pinL} width={pinW} height={pinL} fill="url(#pin-grad-up)" />);
-                });
-                // Left pins
-                pinPositions.forEach((cy, i) => {
-                  pins.push(<rect key={`pl-${i}`} x={0} y={cy - pinW / 2} width={pinL} height={pinW} fill="url(#pin-grad-right)" />);
-                });
-                // Right pins
-                pinPositions.forEach((cy, i) => {
-                  pins.push(<rect key={`pr-${i}`} x={400 - pinL} y={cy - pinW / 2} width={pinL} height={pinW} fill="url(#pin-grad-left)" />);
-                });
-
-                return pins;
-              })()}
-
-              {/* ====== PCB TRACES + SIGNAL PULSES ====== */}
-              {(() => {
-                // Exact pin centers matching the rects above
-                const P = Array.from({ length: 12 }, (_, i) => Math.round((12 + i * 7.2) * 4));
-                // Pin inner-tip coordinates (where trace connects)
-                const TIP = 14; // inner edge of pin rect
-                const DIE = { t: 82, b: 318, l: 82, r: 318 };
-
-                // Route definitions: side, pinIndex, direction (rx=inward pin→die, tx=outward die→pin), delay
-                const routes: { path: string; via: { x: number; y: number } | null; dir: 'tx' | 'rx'; delay: number }[] = [
-                  // === TOP PINS (Straight clean traces, no corner bend wires) ===
-                  { path: `M ${P[2]},${TIP} L ${P[2]},${DIE.t}`, via: null, dir: 'tx', delay: 0.15 },
-                  { path: `M ${P[3]},${TIP} L ${P[3]},${DIE.t}`, via: null, dir: 'rx', delay: 0.35 },
-                  { path: `M ${P[4]},${TIP} L ${P[4]},${DIE.t}`, via: null, dir: 'rx', delay: 0.3 },
-                  { path: `M ${P[5]},${TIP} L ${P[5]},${DIE.t}`, via: null, dir: 'tx', delay: 0.1 },
-                  { path: `M ${P[6]},${TIP} L ${P[6]},${DIE.t}`, via: null, dir: 'tx', delay: 0.25 },
-                  { path: `M ${P[7]},${TIP} L ${P[7]},${DIE.t}`, via: null, dir: 'rx', delay: 0.4 },
-                  { path: `M ${P[8]},${TIP} L ${P[8]},${DIE.t}`, via: null, dir: 'rx', delay: 0.1 },
-                  { path: `M ${P[9]},${TIP} L ${P[9]},${DIE.t}`, via: null, dir: 'tx', delay: 0.2 },
-
-                  // === BOTTOM PINS ===
-                  { path: `M ${P[2]},${400 - TIP} L ${P[2]},${DIE.b}`, via: null, dir: 'rx', delay: 0.2 },
-                  { path: `M ${P[3]},${400 - TIP} L ${P[3]},${DIE.b}`, via: null, dir: 'rx', delay: 0.25 },
-                  { path: `M ${P[4]},${400 - TIP} L ${P[4]},${DIE.b}`, via: null, dir: 'tx', delay: 0.4 },
-                  { path: `M ${P[5]},${400 - TIP} L ${P[5]},${DIE.b}`, via: null, dir: 'rx', delay: 0.15 },
-                  { path: `M ${P[6]},${400 - TIP} L ${P[6]},${DIE.b}`, via: null, dir: 'tx', delay: 0.05 },
-                  { path: `M ${P[7]},${400 - TIP} L ${P[7]},${DIE.b}`, via: null, dir: 'tx', delay: 0.3 },
-                  { path: `M ${P[8]},${400 - TIP} L ${P[8]},${DIE.b}`, via: null, dir: 'rx', delay: 0.45 },
-                  { path: `M ${P[9]},${400 - TIP} L ${P[9]},${DIE.b}`, via: null, dir: 'tx', delay: 0.35 },
-
-                  // === LEFT PINS ===
-                  { path: `M ${TIP},${P[2]} L ${DIE.l},${P[2]}`, via: null, dir: 'tx', delay: 0.35 },
-                  { path: `M ${TIP},${P[3]} L ${DIE.l},${P[3]}`, via: null, dir: 'rx', delay: 0.1 },
-                  { path: `M ${TIP},${P[4]} L ${DIE.l},${P[4]}`, via: null, dir: 'tx', delay: 0.25 },
-                  { path: `M ${TIP},${P[5]} L ${DIE.l},${P[5]}`, via: null, dir: 'rx', delay: 0.5 },
-                  { path: `M ${TIP},${P[6]} L ${DIE.l},${P[6]}`, via: null, dir: 'tx', delay: 0.3 },
-                  { path: `M ${TIP},${P[7]} L ${DIE.l},${P[7]}`, via: null, dir: 'rx', delay: 0.4 },
-                  { path: `M ${TIP},${P[8]} L ${DIE.l},${P[8]}`, via: null, dir: 'tx', delay: 0.15 },
-                  { path: `M ${TIP},${P[9]} L ${DIE.l},${P[9]}`, via: null, dir: 'rx', delay: 0.2 },
-
-                  // === RIGHT PINS ===
-                  { path: `M ${400 - TIP},${P[2]} L ${DIE.r},${P[2]}`, via: null, dir: 'rx', delay: 0.1 },
-                  { path: `M ${400 - TIP},${P[3]} L ${DIE.r},${P[3]}`, via: null, dir: 'rx', delay: 0.55 },
-                  { path: `M ${400 - TIP},${P[4]} L ${DIE.r},${P[4]}`, via: null, dir: 'tx', delay: 0.35 },
-                  { path: `M ${400 - TIP},${P[5]} L ${DIE.r},${P[5]}`, via: null, dir: 'tx', delay: 0.2 },
-                  { path: `M ${400 - TIP},${P[6]} L ${DIE.r},${P[6]}`, via: null, dir: 'rx', delay: 0.15 },
-                  { path: `M ${400 - TIP},${P[7]} L ${DIE.r},${P[7]}`, via: null, dir: 'tx', delay: 0.4 },
-                  { path: `M ${400 - TIP},${P[8]} L ${DIE.r},${P[8]}`, via: null, dir: 'rx', delay: 0.25 },
-                  { path: `M ${400 - TIP},${P[9]} L ${DIE.r},${P[9]}`, via: null, dir: 'rx', delay: 0.45 },
-                ];
-
-                return routes.map((route, i) => (
-                  <g key={`pcb-${i}`}>
-                    {/* Copper Trace */}
-                    <path
-                      d={route.path}
-                      fill="none"
-                      stroke={isLight ? 'rgba(225, 6, 0, 0.35)' : 'rgba(225, 6, 0, 0.55)'}
-                      strokeWidth="1.75"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-
-                    {/* Via Pad at bend */}
-                    {route.via && (
-                      <>
-                        <circle cx={route.via.x} cy={route.via.y} r="3.5"
-                          fill="#E10600"
-                          opacity={isLight ? '0.85' : '1'}
-                        />
-                        <circle cx={route.via.x} cy={route.via.y} r="1.4"
-                          fill={isLight ? '#FFFFFF' : '#0D0D10'}
-                        />
-                      </>
-                    )}
-
-                    {/* Signal Pulse — TX (outward die→pin) reverses via keyPoints */}
-                    <circle r="3"
-                      fill="#E10600"
-                      style={{ filter: 'drop-shadow(0 0 6px #E10600)' }}
-                    >
-                      <animateMotion
-                        path={route.path}
-                        dur={`${1.6 + (i % 3) * 0.4}s`}
-                        repeatCount="indefinite"
-                        begin={`${route.delay}s`}
-                        keyPoints={route.dir === 'tx' ? '1;0' : '0;1'}
-                        keyTimes="0;1"
-                        calcMode="linear"
-                      />
-                    </circle>
-                  </g>
-                ));
-              })()}
-            </svg>
-
-            {/* Corner Accents */}
-            <div style={{ position: 'absolute', top: '12px', left: '12px', width: '20px', height: '20px', borderTop: '2px solid #E10600', borderLeft: '2px solid #E10600' }} />
-            <div style={{ position: 'absolute', top: '12px', right: '12px', width: '20px', height: '20px', borderTop: '2px solid #E10600', borderRight: '2px solid #E10600' }} />
-            <div style={{ position: 'absolute', bottom: '12px', left: '12px', width: '20px', height: '20px', borderBottom: '2px solid #E10600', borderLeft: '2px solid #E10600' }} />
-            <div style={{ position: 'absolute', bottom: '12px', right: '12px', width: '20px', height: '20px', borderBottom: '2px solid #E10600', borderRight: '2px solid #E10600' }} />
-
-            {/* Inner Silicon Die Core */}
-            <div
-              style={{
-                position: 'relative',
-                zIndex: 2,
-                width: '70%',
-                height: '70%',
-                borderRadius: '16px',
-                background: 'linear-gradient(135deg, #1D1D22 0%, #0F0F12 100%)',
-                border: '1.5px solid rgba(225, 6, 0, 0.5)',
-                boxShadow: isLight
-                  ? '0 8px 24px rgba(0,0,0,0.25), 0 0 20px rgba(225, 6, 0, 0.25)'
-                  : '0 0 30px rgba(225, 6, 0, 0.35), inset 0 0 15px rgba(0,0,0,0.9)',
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                padding: '16px',
-                textAlign: 'center',
-                overflow: 'hidden',
-              }}
-            >
-              {/* Die Core Circuit Internal Bus Grid */}
-              <div
-                style={{
-                  position: 'absolute',
-                  inset: '6px',
-                  borderRadius: '10px',
-                  border: '1px stroke rgba(225, 6, 0, 0.2)',
-                  background: 'radial-gradient(circle at 50% 50%, rgba(225, 6, 0, 0.18) 0%, transparent 70%)',
-                  pointerEvents: 'none',
-                }}
-              />
-
-              {/* Internal Signal Bus Activity Indicators */}
-              <div style={{ position: 'absolute', top: '8px', left: '12px', right: '12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', color: '#E10600', letterSpacing: '0.1em' }}>TX ▶ 4.8Gbps</span>
-                <span style={{ fontFamily: 'var(--font-mono)', fontSize: '8px', color: 'rgba(255,255,255,0.6)', letterSpacing: '0.1em' }}>RX ◀ ACTIVE</span>
-              </div>
-
-              {/* Central FPGA / RTL Branding */}
-              <div style={{ position: 'relative', zIndex: 3, marginTop: '8px' }}>
-                <div style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '10px',
-                  letterSpacing: '0.25em',
-                  color: '#E10600',
-                  marginBottom: '4px',
-                  fontWeight: 700,
-                }}>
-                  RTL-CORE // VLSI-01
-                </div>
-
-                {/* Metallic Chip Title */}
-                <div style={{
-                  fontSize: '22px',
-                  fontWeight: 800,
-                  fontFamily: 'var(--font-head)',
-                  letterSpacing: '-0.02em',
-                  color: '#FFFFFF',
-                  textShadow: '0 0 14px rgba(225,6,0,0.8)',
-                  marginBottom: '4px',
-                }}>
-                  SoC
-                </div>
-
-                <div style={{
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '10px',
-                  letterSpacing: '0.1em',
-                  color: 'rgba(255, 255, 255, 0.7)',
-                  marginBottom: '12px',
-                }}>
-                  SYSTEMVERILOG • UVM
-                </div>
-
-                {/* Signal Status Pulsing Nodes with Live Blink Animation */}
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px' }}>
-                  {[
-                    { name: 'AHB/APB', delay: 0 },
-                    { name: 'FPGA', delay: 0.3 },
-                    { name: 'ESP32', delay: 0.6 },
-                  ].map((node) => (
-                    <motion.div
-                      key={node.name}
-                      animate={{
-                        borderColor: ['rgba(225,6,0,0.3)', 'rgba(225,6,0,0.8)', 'rgba(225,6,0,0.3)'],
-                        boxShadow: ['0 0 0px #E10600', '0 0 8px #E10600', '0 0 0px #E10600'],
-                      }}
-                      transition={{ duration: 1.5, repeat: Infinity, delay: node.delay }}
-                      style={{
-                        padding: '3px 8px',
-                        borderRadius: '4px',
-                        background: 'rgba(225,6,0,0.18)',
-                        border: '1px solid rgba(225,6,0,0.4)',
-                        fontFamily: 'var(--font-mono)',
-                        fontSize: '9px',
-                        color: '#E10600',
-                        fontWeight: 600,
-                      }}
-                    >
-                      {node.name}
-                    </motion.div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Animated Scan Line */}
-              <motion.div
-                animate={{ y: [-80, 80] }}
-                transition={{ duration: 2.5, repeat: Infinity, ease: 'linear' }}
-                style={{
-                  position: 'absolute',
-                  left: 0,
-                  right: 0,
-                  height: '2px',
-                  background: 'linear-gradient(90deg, transparent, #E10600, transparent)',
-                  boxShadow: '0 0 12px #E10600',
-                  opacity: 0.8,
-                  zIndex: 3,
-                }}
-              />
-            </div>
-
-            {/* Floating Tag Badges */}
-            <div style={{
+          {/* Floating Tag Badge — bottom right */}
+          <motion.div
+            animate={{ y: [0, -6, 0] }}
+            transition={{ duration: 2.8, repeat: Infinity, ease: 'easeInOut' }}
+            style={{
               position: 'absolute',
-              bottom: '-10px',
-              right: '20px',
+              bottom: '10px',
+              right: '10px',
               zIndex: 10,
-              padding: '6px 14px',
+              padding: '7px 14px',
               borderRadius: '8px',
               background: isLight ? '#FFFFFF' : '#111111',
               border: isLight ? '1px solid rgba(225, 6, 0, 0.4)' : '1px solid #E10600',
               fontFamily: 'var(--font-mono)',
               fontSize: '10px',
               color: '#E10600',
-              boxShadow: isLight ? '0 4px 15px rgba(0,0,0,0.1)' : '0 4px 15px rgba(0,0,0,0.6)',
-            }}>
-              ⚡ 200 MHz CLK FREQ
-            </div>
+              boxShadow: isLight ? '0 4px 15px rgba(0,0,0,0.1)' : '0 4px 20px rgba(0,0,0,0.7), 0 0 10px rgba(225,6,0,0.15)',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            RTL Design Engineer
+          </motion.div>
 
-            <div style={{
+          {/* Floating Tag Badge — top left */}
+          <motion.div
+            animate={{ y: [0, -6, 0] }}
+            transition={{ duration: 3.2, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+            style={{
               position: 'absolute',
-              top: '-10px',
-              left: '20px',
+              top: '10px',
+              left: '10px',
               zIndex: 10,
-              padding: '6px 14px',
+              padding: '7px 14px',
               borderRadius: '8px',
               background: isLight ? '#FFFFFF' : '#111111',
               border: isLight ? '1px solid rgba(0, 0, 0, 0.15)' : '1px solid rgba(225,6,0,0.4)',
               fontFamily: 'var(--font-mono)',
               fontSize: '10px',
               color: isLight ? '#333333' : '#FFFFFF',
-              boxShadow: isLight ? '0 4px 15px rgba(0,0,0,0.1)' : '0 4px 15px rgba(0,0,0,0.6)',
-            }}>
-              🔬 28nm SILICON DIE
-            </div>
-          </div>
+              boxShadow: isLight ? '0 4px 15px rgba(0,0,0,0.1)' : '0 4px 20px rgba(0,0,0,0.7)',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            Kiwistron · VLSI
+          </motion.div>
+
+          {/* Rotating dashed orbit ring */}
+          <motion.div
+            animate={{ rotate: 360 }}
+            transition={{ duration: 12, repeat: Infinity, ease: 'linear' }}
+            style={{
+              position: 'absolute',
+              width: 'min(100%, 420px)',
+              aspectRatio: '1 / 1',
+              borderRadius: '50%',
+              border: '1.5px dashed rgba(225, 6, 0, 0.22)',
+              pointerEvents: 'none',
+            }}
+          />
         </motion.div>
 
       </div>
