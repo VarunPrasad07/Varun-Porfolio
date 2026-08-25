@@ -301,7 +301,7 @@ export const ACHIEVEMENTS = [
 ] as const;
 
 export const CONTACT_INFO = {
-  email: 'varunssvk543@gmail.com',
+  email: 'varunprasad.eng@gmail.com',
   phone: '+91 9566622885',
   github: 'https://github.com/VarunPrasad07',
   linkedin: 'https://www.linkedin.com/in/varunprasad07/',
